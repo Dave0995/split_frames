@@ -11,7 +11,7 @@ DEFAULT_PATH = './videos'
 OUT_DEFAULT = './frames'
 
 def frame_writer(videocap: cv2, counter: float, video: str, save_path: str) -> bool:
-
+    
     videocap.set(cv2.CAP_PROP_POS_MSEC,counter*1000) 
     success, img = videocap.read()
 
@@ -44,12 +44,13 @@ if __name__ == '__main__':
                         dest = 'dimension',
                         type = Tuple[int],
                         default = DIM,
-                        help = "Dimension for out image")
+                        help = 'Dimension for out image')
     
     parser.add_argument('--save_path',
                         dest = 'save_path',
                         type = str,
-                        default = OUT_DEFAULT)
+                        default = OUT_DEFAULT,
+                        help = 'Path where the frames will be saved')
     
     args = parser.parse_args()
 
@@ -58,8 +59,8 @@ if __name__ == '__main__':
     for video in path.iterdir():
         
         video = str(video)
-        videocap = cv2.VideoCapture(args.path_videos + video)
-
+        videocap = cv2.VideoCapture(video)
+        
         counter = 0
         success = frame_writer(videocap, counter, video, args.save_path)
 
