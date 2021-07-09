@@ -1,31 +1,71 @@
 import cv2
+import argparse
 
-NAME = 'DJI_0363.MP4'
-PATH = './videos/' + NAME
+from typing import Tuple
+from pathlib import Path
+
 DIM = (1280, 720)
+INTER_METHOD = cv2.INTER_AREA
+RATE = 0.4
+DEFAULT_PATH = './videos'
+OUT_DEFAULT = './frames'
 
-def frame_writer(videocap, counter):
+def frame_writer(videocap: cv2, counter: float, video: str, save_path: str) -> bool:
+
     videocap.set(cv2.CAP_PROP_POS_MSEC,counter*1000) 
     success, img = videocap.read()
 
     if success:
-        img = cv2.resize(img, DIM, interpolation = cv2.INTER_AREA)
-        cv2.imwrite(f'./frames/{NAME[:-4]}_frame_{counter}.jpg', img)
-        print(counter)
+
+        img = cv2.resize(img, DIM, interpolation = INTER_METHOD)
+        frame_location = f'{save_path}/{video[:-4]}_step_{counter}.jpg'
+        cv2.imwrite(frame_location, img)
+        print(f'Step number: {counter}')
     
     return success
 
 if __name__ == '__main__':
 
-    videocap = cv2.VideoCapture(PATH)
-    success, img = videocap.read()
+    parser = argparse.ArgumentParser(description = 'Splitter frames program')
 
-    counter = 0
-    rate = 0.5
+    parser.add_argument('--path_videos',
+                        dest = 'path_videos',
+                        type = str,
+                        default = DEFAULT_PATH,
+                        help = 'Path where the videos are')
 
-    while success:
+    parser.add_argument('--rate',
+                        dest = 'rate',
+                        type = float,
+                        default = RATE,
+                        help = 'Frame rate in seconds')
+    
+    parser.add_argument('--dimension',
+                        dest = 'dimension',
+                        type = Tuple[int],
+                        default = DIM,
+                        help = "Dimension for out image")
+    
+    parser.add_argument('--save_path',
+                        dest = 'save_path',
+                        type = str,
+                        default = OUT_DEFAULT)
+    
+    args = parser.parse_args()
 
-        counter = round(counter + rate)
-        success = frame_writer(videocap, counter)
+    path = Path(args.path_videos)
 
-    print("Finalización!!!")
+    for video in path.iterdir():
+        
+        video = str(video)
+        videocap = cv2.VideoCapture(args.path_videos + video)
+
+        counter = 0
+        success = frame_writer(videocap, counter, video, args.save_path)
+
+        while success:
+
+            counter = round(counter + args.rate, 2)
+            success = frame_writer(videocap, counter, video, args.save_path)
+
+        print(f'Process with video ({video}) has been finished!!')
