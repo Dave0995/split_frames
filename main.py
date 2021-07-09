@@ -18,7 +18,7 @@ def frame_writer(videocap: cv2, counter: float, video: str, save_path: str) -> b
     if success:
 
         img = cv2.resize(img, DIM, interpolation = INTER_METHOD)
-        frame_location = f'{save_path}/{video[:-4]}_step_{counter}.jpg'
+        frame_location = f'{save_path}/{video[7:-4]}_step_{counter}.jpg'
         cv2.imwrite(frame_location, img)
         print(f'Step number: {counter}')
     
