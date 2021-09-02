@@ -10,7 +10,10 @@ RATE = 0.4
 DEFAULT_PATH = './videos'
 OUT_DEFAULT = './frames'
 
-def frame_writer(videocap: cv2, counter: float, video: str, save_path: str) -> bool:
+def frame_writer(videocap: cv2, 
+                 counter: float, 
+                 video: str, 
+                 save_path: str) -> bool:
     
     videocap.set(cv2.CAP_PROP_POS_MSEC,counter*1000) 
     success, img = videocap.read()
